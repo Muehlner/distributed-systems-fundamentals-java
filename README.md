@@ -1,234 +1,120 @@
-# \# 🧠 Distributed Systems Trade-offs Lab
+# 🧠 Distributed Systems Trade-offs Lab
 
-# 
+> A hands-on laboratory to understand **why distributed systems are hard** — and how architectural trade-offs shape real systems.
 
-# > A hands-on laboratory to understand \*\*why distributed systems are hard\*\* — and how architectural trade-offs shape real systems.
+---
 
-# 
+## 📌 Overview
 
-# ---
+This repository is a **practical reference project** designed to demonstrate the **fundamental trade-offs of distributed systems**.
 
-# 
+Instead of presenting an idealized or “perfect” architecture, this project intentionally exposes:
+- Latency
+- Partial failures
+- Eventual consistency
+- Coordination costs
+- Retry and duplication problems
+- Observability challenges
 
-# \## 📌 Overview
+The goal is to make distributed systems **concrete, observable, and understandable**.
 
-# 
+This repository is the practical companion to the article:
 
-# This repository is a \*\*practical reference project\*\* designed to demonstrate the \*\*fundamental trade-offs of distributed systems\*\*.
+> **Why Distributed Systems Are Hard: The Core Trade-offs**
 
-# 
+---
 
-# Instead of presenting an idealized or “perfect” architecture, this project intentionally exposes:
+## 🎯 Purpose
 
-# \- Latency
+Distributed systems are difficult not because engineers lack skill,  
+but because **distribution introduces unavoidable limits**.
 
-# \- Partial failures
+This project exists to:
+- Connect theory with real system behavior
+- Make architectural trade-offs explicit
+- Provide a reproducible learning environment
+- Serve as a portfolio-ready example of systems thinking
 
-# \- Eventual consistency
+Complexity here is **intentional**, not accidental.
 
-# \- Coordination costs
+---
 
-# \- Retry and duplication problems
+## ❓ What This Project Is (and Is Not)
 
-# \- Observability challenges
+### ✅ This project **is**
+- A learning-oriented distributed system
+- A reference lab for architectural trade-offs
+- A reproducible environment with controlled failures
+- A practical complement to theoretical articles
+- A portfolio-ready example for architects and senior engineers
 
-# 
+### ❌ This project **is not**
+- A production-ready system
+- A framework or template
+- An example of “best practices only”
+- Optimized for simplicity or minimal code
 
-# The goal is to make distributed systems \*\*concrete, observable, and understandable\*\*.
+---
 
-# 
+## 🧱 Architecture Overview
 
-# This repository is the practical companion to the article:
+### Services
+- **order-service**  
+  Orchestrates the order lifecycle (SAGA-like coordinator)
 
-# 
+- **payment-service**  
+  Simulates payment authorization and refunds, including failures and retries
 
-# > \*\*Why Distributed Systems Are Hard: The Core Trade-offs\*\*
+- **inventory-service**  
+  Simulates inventory reservation with partial failures
 
-# 
+### Infrastructure
+- PostgreSQL (one database per service)
+- Kafka (event-driven communication)
+- OpenTelemetry + Jaeger (distributed tracing)
+- Prometheus + Grafana (metrics and monitoring)
 
-# ---
+### Architectural Style
+- Event-driven
+- Eventually consistent
+- No distributed transactions (no 2PC)
+- Compensation-based failure handling
 
-# 
+---
 
-# \## 🎯 Purpose
+## 🔄 High-level Flow
 
-# 
+1. A client creates an order via `order-service`
+2. `order-service` emits an **OrderCreated** event
+3. `payment-service` authorizes payment and emits a result event
+4. `inventory-service` reserves stock and emits a result event
+5. `order-service` updates the final order state
+6. If a failure occurs after payment, a **refund compensation** is triggered
 
-# Distributed systems are difficult not because engineers lack skill,  
+---
 
-# but because \*\*distribution introduces unavoidable limits\*\*.
+## 🧠 Trade-offs Demonstrated
 
-# 
-
-# This project exists to:
-
-# \- Connect theory with real system behavior
-
-# \- Make architectural trade-offs explicit
-
-# \- Provide a reproducible learning environment
-
-# \- Serve as a portfolio-ready example of systems thinking
-
-# 
-
-# Complexity here is \*\*intentional\*\*, not accidental.
-
-# 
-
-# ---
-
-# 
-
-# \## ❓ What This Project Is (and Is Not)
-
-# 
-
-# \### ✅ This project \*\*is\*\*
-
-# \- A learning-oriented distributed system
-
-# \- A reference lab for architectural trade-offs
-
-# \- A reproducible environment with controlled failures
-
-# \- A practical complement to theoretical articles
-
-# \- A portfolio-ready example for architects and senior engineers
-
-# 
-
-# \### ❌ This project \*\*is not\*\*
-
-# \- A production-ready system
-
-# \- A framework or template
-
-# \- An example of “best practices only”
-
-# \- Optimized for simplicity or minimal code
-
-# 
-
-# ---
-
-# 
-
-# \## 🧱 Architecture Overview
-
-# 
-
-# \### Services
-
-# \- \*\*order-service\*\*  
-
-# &nbsp; Orchestrates the order lifecycle (SAGA-like coordinator)
-
-# 
-
-# \- \*\*payment-service\*\*  
-
-# &nbsp; Simulates payment authorization and refunds, including failures and retries
-
-# 
-
-# \- \*\*inventory-service\*\*  
-
-# &nbsp; Simulates inventory reservation with partial failures
-
-# 
-
-# \### Infrastructure
-
-# \- PostgreSQL (one database per service)
-
-# \- Kafka (event-driven communication)
-
-# \- OpenTelemetry + Jaeger (distributed tracing)
-
-# \- Prometheus + Grafana (metrics and monitoring)
-
-# 
-
-# \### Architectural Style
-
-# \- Event-driven
-
-# \- Eventually consistent
-
-# \- No distributed transactions (no 2PC)
-
-# \- Compensation-based failure handling
-
-# 
-
-# ---
-
-# 
-
-# \## 🔄 High-level Flow
-
-# 
-
-# 1\. A client creates an order via `order-service`
-
-# 2\. `order-service` emits an \*\*OrderCreated\*\* event
-
-# 3\. `payment-service` authorizes payment and emits a result event
-
-# 4\. `inventory-service` reserves stock and emits a result event
-
-# 5\. `order-service` updates the final order state
-
-# 6\. If a failure occurs after payment, a \*\*refund compensation\*\* is triggered
-
-# 
-
-# ---
-
-# 
-
-# \## 🧠 Trade-offs Demonstrated
-
-# 
-
-# | Trade-off | Where it appears |
-
-# |----------|------------------|
-
-# | Network vs Local Calls | Inter-service communication |
-
-# | Latency vs Consistency | Fast order creation vs delayed final state |
-
-# | Availability vs Coordination | No global locks or distributed transactions |
-
-# | Failure Handling vs Complexity | Retries, idempotency, DLQs |
-
-# | Observability vs Performance | Tracing, metrics, logging |
-
-# 
-
-# ---
-
-# 
-
-# \## 🚀 How to Run Locally
-
-# 
-
-# \### Prerequisites
-
-# \- Docker
-
-# \- Docker Compose
-
-# 
-
-# \### Start infrastructure
-
-# ```bash
-
-# docker compose up -d
+| Trade-off | Where it appears |
+|----------|------------------|
+| Network vs Local Calls | Inter-service communication |
+| Latency vs Consistency | Fast order creation vs delayed final state |
+| Availability vs Coordination | No global locks or distributed transactions |
+| Failure Handling vs Complexity | Retries, idempotency, DLQs |
+| Observability vs Performance | Tracing, metrics, logging |
+
+---
+
+## 🚀 How to Run Locally
+
+### Prerequisites
+- Docker
+- Docker Compose
+
+### Start infrastructure
+```bash
+docker compose up -d
+```
 
 ---
 
@@ -303,6 +189,4 @@ See [`docs/experiments.md`](docs/experiments.md) for step-by-step experiments, i
 > They are hard because **distribution introduces unavoidable trade-offs**.
 
 This repository exists to make those trade-offs **visible, testable, and understandable**.
-
-
 
