@@ -114,3 +114,79 @@ Complexity here is **intentional**, not accidental.
 ### Start infrastructure
 ```bash
 docker compose up -d
+```
+
+---
+
+## 🧭 Runtime Information
+
+### Available UIs
+- **Jaeger (Distributed Tracing):** http://localhost:16686
+- **Prometheus (Metrics):** http://localhost:9090
+- **Grafana (Dashboards):** http://localhost:3000  
+  - user: `admin`  
+  - password: `admin`
+
+---
+
+## 📡 Service Ports
+
+| Service | Port |
+|------|------|
+| order-service | 8080 |
+| payment-service | 8081 |
+| inventory-service | 8082 |
+| Kafka (host access) | 9094 |
+
+---
+
+## 🔍 Observability
+
+### Distributed Tracing
+A **correlation ID** is propagated across all service boundaries via:
+- HTTP header: `X-Correlation-Id`
+- Kafka event envelope
+
+All services export traces using **OpenTelemetry**.
+
+With Jaeger, you can:
+- Follow a single order across multiple services
+- Observe latency accumulation across hops
+- Identify failure propagation and retries
+
+### Metrics
+The system exposes metrics for:
+- HTTP latency and error rates
+- Kafka producer and consumer behavior
+- Business-level events (orders, payments, failures)
+
+---
+
+## 🧪 Experiments
+
+This system is intentionally designed to be **broken on purpose**.
+
+See [`docs/experiments.md`](docs/experiments.md) for step-by-step experiments, including:
+- Eventual consistency behavior
+- Partial failure scenarios
+- Retry and duplication handling
+- Compensation flows
+- Distributed tracing analysis
+
+---
+
+## 📚 Documentation
+
+- [`docs/architecture.md`](docs/architecture.md) — architecture and design principles  
+- [`docs/tradeoffs-map.md`](docs/tradeoffs-map.md) — trade-off → component mapping  
+- [`docs/experiments.md`](docs/experiments.md) — reproducible experiments  
+
+---
+
+## 🧠 Key Takeaway
+
+> Distributed systems are not hard because engineers are bad.  
+> They are hard because **distribution introduces unavoidable trade-offs**.
+
+This repository exists to make those trade-offs **visible, testable, and understandable**.
+
