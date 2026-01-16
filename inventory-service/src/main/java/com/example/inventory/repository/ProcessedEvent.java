@@ -1,4 +1,4 @@
-package com.example.orders.domain;
+package com.example.inventory.repository;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -9,7 +9,6 @@ import java.time.Instant;
 @Entity
 @Table(name = "processed_events")
 public class ProcessedEvent {
-
     @Id
     private String eventId;
 

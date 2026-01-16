@@ -1,6 +1,6 @@
 package com.example.orders.messaging.consumers;
 
-import com.example.orders.domain.ProcessedEvent;
+import com.example.orders.repository.ProcessedEvent;
 import com.example.orders.messaging.EventEnvelope;
 import com.example.orders.messaging.EventType;
 
